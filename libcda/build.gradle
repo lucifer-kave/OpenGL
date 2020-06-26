@@ -1,0 +1,10 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs/doc', include: ['*.jar'])
+//    implementation group: 'org.pfsw', name: 'pf-cda-core', version: '2.1.0'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
