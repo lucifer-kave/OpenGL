@@ -1,4 +1,3 @@
-com.sina.gifdecoder.GifDecoder
 com.sina.gifdecoder.GifDrawable
 com.sina.weibo.ActivityActionManager
 com.sina.weibo.BaseActivity
@@ -58,6 +57,7 @@ com.sina.weibo.datasource.Dao
 com.sina.weibo.datasource.DataSource
 com.sina.weibo.datasource.FileCacheDataSource
 com.sina.weibo.datasource.FileCacheDataSourceNew
+com.sina.weibo.datasource.ParamPackage
 com.sina.weibo.datasource.SinaWeiboDB
 com.sina.weibo.event.BusProvider
 com.sina.weibo.event.MBlogUpdateEvent
@@ -84,7 +84,6 @@ com.sina.weibo.jobqueue.config.HandleVideoConfig
 com.sina.weibo.jobqueue.entrance.VideoEntrance
 com.sina.weibo.jobqueue.job.JobUtils
 com.sina.weibo.jobqueue.send.SendOperationResult
-com.sina.weibo.log.DMMessageFlowLogHelper
 com.sina.weibo.log.WeiboLog
 com.sina.weibo.log.WeiboLogConfig
 com.sina.weibo.log.WeiboLogHelper
@@ -93,6 +92,7 @@ com.sina.weibo.media.proxy.MediaProxy
 com.sina.weibo.media.proxy.MediaProxyInterface
 com.sina.weibo.memory.RecyclerInterface
 com.sina.weibo.models.AccessCode
+com.sina.weibo.models.AccountSettings
 com.sina.weibo.models.AddAppItem
 com.sina.weibo.models.AffiliationObject
 com.sina.weibo.models.Attachment
@@ -102,7 +102,6 @@ com.sina.weibo.models.CardList
 com.sina.weibo.models.ChooseContactsActiveGroupsList
 com.sina.weibo.models.ComposeOptionItem
 com.sina.weibo.models.ComposeOptionsConfig
-com.sina.weibo.models.DMGenericCard
 com.sina.weibo.models.DMGroupChatSettingModel
 com.sina.weibo.models.DMPicUploadModel
 com.sina.weibo.models.DMSettingModel
@@ -126,7 +125,6 @@ com.sina.weibo.models.IntermediaryModels
 com.sina.weibo.models.JsonButton
 com.sina.weibo.models.JsonDataObject
 com.sina.weibo.models.JsonFanList
-com.sina.weibo.models.JsonMessage
 com.sina.weibo.models.JsonNetResult
 com.sina.weibo.models.JsonUserInfo
 com.sina.weibo.models.JsonUserInfoList
@@ -135,19 +133,14 @@ com.sina.weibo.models.MblogCard
 com.sina.weibo.models.MblogTopic
 com.sina.weibo.models.MediaAttachmentList
 com.sina.weibo.models.MediaDataObject
-com.sina.weibo.models.MessageFlow
-com.sina.weibo.models.MessageFlowList
-com.sina.weibo.models.MessageGroupJsonResult
 com.sina.weibo.models.MessageGroupResult
 com.sina.weibo.models.MessageGroupUsersNickResult
 com.sina.weibo.models.MessageMenu
 com.sina.weibo.models.MessageMenuList
 com.sina.weibo.models.MessageUserGroupRelation
 com.sina.weibo.models.MsgFlowFeedBackResult
-com.sina.weibo.models.NoticeFeatureCodeList
 com.sina.weibo.models.NoticeFilterGroup
 com.sina.weibo.models.NoticeFilterItem
-com.sina.weibo.models.NoticeFilterList
 com.sina.weibo.models.OriginalPicItem
 com.sina.weibo.models.OutterPushSettingRule
 com.sina.weibo.models.POILocation
@@ -159,9 +152,7 @@ com.sina.weibo.models.PrivateGroupInfo
 com.sina.weibo.models.PrivateGroupInfoContainer
 com.sina.weibo.models.PullUnreadNum
 com.sina.weibo.models.PushResponseData
-com.sina.weibo.models.QueryGroupBulletinResult
 com.sina.weibo.models.RecentUserList
-com.sina.weibo.models.RemindMateriel
 com.sina.weibo.models.SearchMatchedKey
 com.sina.weibo.models.SearchUserAndGroupList
 com.sina.weibo.models.SearchedSuggestList
@@ -174,6 +165,7 @@ com.sina.weibo.models.UserAvatarExtendInfo
 com.sina.weibo.models.UserGroupCounts
 com.sina.weibo.models.WeiboEntrance
 com.sina.weibo.models.WeiyouSessionModel
+com.sina.weibo.models.gson.GsonUtils
 com.sina.weibo.models.interfaces.IVipInterface
 com.sina.weibo.models.message.QueryBulletinModel
 com.sina.weibo.models.story.VideoAttachment
@@ -186,7 +178,6 @@ com.sina.weibo.modules.qrcode.QRCode
 com.sina.weibo.modules.qrcode.QRCodeCallback
 com.sina.weibo.modules.story.IStory
 com.sina.weibo.modules.story.Story
-com.sina.weibo.modules.story.interfaces.IStoryUtils
 com.sina.weibo.modules.video.IVideo
 com.sina.weibo.modules.video.Video
 com.sina.weibo.modules.weiyou.IWeiyou
@@ -205,8 +196,10 @@ com.sina.weibo.net.INetEngine
 com.sina.weibo.net.NetEngineFactory
 com.sina.weibo.net.NetUtils
 com.sina.weibo.net.NetworkMonitor
+com.sina.weibo.net.annotation.HttpResponse
 com.sina.weibo.net.callback.Callback
 com.sina.weibo.net.carrier.CarrierFactory
+com.sina.weibo.net.common.ResponseParser
 com.sina.weibo.net.download.DownloadCallbackManager
 com.sina.weibo.net.engine.HttpClientNetworkRequests
 com.sina.weibo.net.engine.HttpRequestEntity
@@ -233,7 +226,6 @@ com.sina.weibo.requestmodels.CommonRequestParam
 com.sina.weibo.requestmodels.EditUserInfoParam
 com.sina.weibo.requestmodels.ExpressLikeParam
 com.sina.weibo.requestmodels.GetAttentionListParam
-com.sina.weibo.requestmodels.GetFansGroupListParam
 com.sina.weibo.requestmodels.GetGroupManageParams
 com.sina.weibo.requestmodels.GetSubscriptionListParam
 com.sina.weibo.requestmodels.GetUnreadNumParam
@@ -243,10 +235,10 @@ com.sina.weibo.requestmodels.MessageMenuParam
 com.sina.weibo.requestmodels.PrivateGroupRequestListParam
 com.sina.weibo.requestmodels.PushInstallParam
 com.sina.weibo.requestmodels.RepostSpamParam
+com.sina.weibo.requestmodels.RequestParam
 com.sina.weibo.requestmodels.SendMessageMenuParam
 com.sina.weibo.requestmodels.SquareSearchSuggestParam
 com.sina.weibo.requestmodels.UnSubscribeParam
-com.sina.weibo.requestmodels.WeiyouMenuParam
 com.sina.weibo.sendqueue.PostContentHelper
 com.sina.weibo.statisticinterface.StatisticMethods
 com.sina.weibo.stream.datamanager.IReadDurationContext
@@ -256,9 +248,6 @@ com.sina.weibo.stream.datamanager.TimeRecordHelper
 com.sina.weibo.stream.datamanager.TimeRecordUtil
 com.sina.weibo.style.IStyle
 com.sina.weibo.text.CardSpan
-com.sina.weibo.text.MessageAtClickableSpan
-com.sina.weibo.text.MessageStockClickableSpan
-com.sina.weibo.text.MessageTopicClickableSpan
 com.sina.weibo.text.MessageUrlClickableSpan
 com.sina.weibo.text.OnSpanClickedListener
 com.sina.weibo.text.WeiboClicker
@@ -276,6 +265,7 @@ com.sina.weibo.utils.DBUtils
 com.sina.weibo.utils.DeviceInfo
 com.sina.weibo.utils.EditIntentBuilder
 com.sina.weibo.utils.EmotionHelper
+com.sina.weibo.utils.ErrorCodeUtils
 com.sina.weibo.utils.ExtendShareResultUtils
 com.sina.weibo.utils.FeedSensorUtils
 com.sina.weibo.utils.FileCleanUtil
@@ -321,6 +311,7 @@ com.sina.weibo.utils.WeiboAsyncTask
 com.sina.weibo.utils.WeiboDialog
 com.sina.weibo.utils.WeiboUserHelper
 com.sina.weibo.utils.WeiyouUtils
+com.sina.weibo.utils.wesync.FetchLogReceiver
 com.sina.weibo.view.AccessCodeDialog
 com.sina.weibo.view.AppPanel
 com.sina.weibo.view.BaseLayout
@@ -342,7 +333,6 @@ com.sina.weibo.view.ImageLinkMovementMethod
 com.sina.weibo.view.LetterIndexBar
 com.sina.weibo.view.MemberTextView
 com.sina.weibo.view.MenuPopupWindow
-com.sina.weibo.view.MessageToolBarView
 com.sina.weibo.view.PageLikeAnimation
 com.sina.weibo.view.PinnedSectionListView
 com.sina.weibo.view.PullDownView
@@ -350,7 +340,6 @@ com.sina.weibo.view.ResizeableLayout
 com.sina.weibo.view.RoundProgressBar
 com.sina.weibo.view.RoundedImageView
 com.sina.weibo.view.SearchBarView
-com.sina.weibo.view.SearchBarViewAttacher
 com.sina.weibo.view.SwitchButton
 com.sina.weibo.view.TimeRecordView
 com.sina.weibo.view.TopToastView
@@ -368,4 +357,9 @@ com.sina.weibo.view.emotion.EmotionMixturePanel
 com.sina.weibo.view.listener.OnAnim
 com.sina.weibo.view.loading.WBLoadingView
 com.sina.weibo.view.share.ShareBuilder
+com.sina.weibo.weiyou.constant.MessageConstant
+com.sina.weibo.weiyou.model.ContactsTransitiveObject
+com.sina.weibo.weiyou.model.PipelinePushMessage
+com.sina.weibo.weiyou.util.EmptyUtils
+com.sina.weibo.weiyou.util.WeiyouGreySwitchUtils
 com.sina.weibo.wxapi.WXEntryActivity

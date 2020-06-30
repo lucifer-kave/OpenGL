@@ -5,11 +5,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
+import android.os.*
 import android.provider.MediaStore
 import android.util.Log
+import android.view.SurfaceHolder
+import android.view.SurfaceHolder.Callback
 import android.view.SurfaceView
 import android.view.View
 import android.widget.Button
@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import com.example.opengl.Jni.render
 import com.example.opengl.Jni.render29
 import java.io.File
+import java.io.FileDescriptor
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private val PICK_VIDEO_RESULT_CODE = 101;
@@ -40,12 +41,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         button.setOnClickListener(this)
         button2.setOnClickListener(this)
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),1)
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+        grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 //        var buffer:ByteBuffer = ByteBuffer.allocateDirect(1024);
 //        var buffer1:ByteBuffer = ByteBuffer.allocate(1024);
@@ -54,34 +58,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode) {
+        when (requestCode) {
             PICK_VIDEO_RESULT_CODE -> {
-                val uri=data?.data
-                Log.i("gq","" + uri?.path)
-                var input = uri?.let { contentResolver.openFileDescriptor(it, "r")?.fileDescriptor }
-                Thread(Runnable {
+                val uri: Uri = data?.data!!
+                Log.i("gq", "" + uri.path)
+                val input: FileDescriptor = contentResolver.openFileDescriptor(uri, "r")!!.fileDescriptor
+                Handler().postDelayed(Runnable {
                     render29(input, surfaceView.holder.surface)
-                }).start()
+                },1000)
             }
         }
     }
 
-    fun getRealPathFromURI(contentUri: Uri): String {
-        var res: String = ""
-        val proj = arrayOf<String>(MediaStore.Video.Media.DATA)
-        val cursor: Cursor = contentResolver.query(contentUri, proj, null, null, null)!!
-        if (cursor.moveToFirst()) {
-            val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            res = cursor.getString(column_index)
-        }
-        cursor.close()
-        return res
-    }
-
     override fun onClick(v: View?) {
         // TODO("Not yet implemented")
-        when(v?.id) {
-            R.id.play->{
+        when (v?.id) {
+            R.id.play -> {
                 if (Build.VERSION.SDK_INT >= 29) {
                     var intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
                     intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -99,6 +91,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 var input = inputFile.absolutePath
                 Thread(Runnable {
                     render(input, surfaceView.holder.surface)
+//                    Jni.startAudioPlayer()
                 }).start()
             }
             R.id.play2 -> {

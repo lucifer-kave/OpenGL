@@ -44,50 +44,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyClass {
+    private static final boolean showUI = true;
     public static void main(String[] args) {
-        try {
-            Workset workset = WorksetReader.readWorkset("/Users/guoqi5/cda_workset.ws");
-            WorksetInitializer initializer = new WorksetInitializer(workset);
-            initializer.initializeWorksetAndWait(null);
-            String path = MyClass.class.getClassLoader().getResource("./class.json").getPath();
+        if (showUI) {
+            CDATool.main(null);
+        }else {
+            try {
+                Workset workset = WorksetReader.readWorkset("/Users/guoqi5/cda_workset.ws");
+                WorksetInitializer initializer = new WorksetInitializer(workset);
+                initializer.initializeWorksetAndWait(null);
+                String path = MyClass.class.getClassLoader().getResource("./class").getPath();
 //            String path = MyClass.class.getClassLoader().getResource("./weiyou-sdk").getPath();
 //            String string = readJsonFile(new File(path));
 //            SimpleJsonParser parser = new SimpleJsonParser();
 //            JsonArray jsonArray = parser.parseArray(string);
-            List<String> strings = getText(path);
-            for (String line : strings) {
-                ClassInformation classInformation = workset.getClassInfo(String.valueOf(line));
-                IMutableClassInformationProcessor<ClassInformation> processor = new ClassDependantsDetector(null, classInformation);
-                ArrayList result = new ArrayList(100);
-                classInformation.getWorkset().processClassInformationObjects(result, processor);
-                int count = 0;
-                for (Object obj : result) {
-                    ClassInformation information = (ClassInformation) obj;
-                    String jar = information.getClassContainer().getDisplayName();
-                    if (jar.contains("weiyou")) {
-                        count ++;
-                    }
-                    if (jar.contains("sdk")) {
-                        String className = information.getClassName();
-                        if (className.contains("$")) {
-                            className = information.getClassName().split("$")[0];
-                        }
-                        if (className.equals(line)) {
+                List<String> strings = getText(path);
+                for (String line : strings) {
+                    ClassInformation classInformation = workset.getClassInfo(String.valueOf(line));
+                    IMutableClassInformationProcessor<ClassInformation> processor = new ClassDependantsDetector(null, classInformation);
+                    ArrayList result = new ArrayList(100);
+                    classInformation.getWorkset().processClassInformationObjects(result, processor);
+                    int count = 0;
+                    for (Object obj : result) {
+                        ClassInformation information = (ClassInformation) obj;
+                        String jar = information.getClassContainer().getDisplayName();
+                        if (jar.contains("weiyou")) {
                             count++;
                         }
+                        if (jar.contains("sdk")) {
+                            String className = information.getClassName();
+                            if (className.contains("$")) {
+                                className = className.split("\\$")[0];
+                            }
+                            if (className.equals(line)) {
+                                count++;
+                            }
+                        }
+                    }
+                    if (count == result.size() && count > 0) {
+                        System.out.println(line);
                     }
                 }
-                if (count == result.size() && count> 0) {
-                    System.out.println(line);
-                }
-            }
-        } catch (WorksetReaderException e) {
-            e.printStackTrace();
+            } catch (WorksetReaderException e) {
+                e.printStackTrace();
 //        } catch (JsonParseException e) {
 //            e.printStackTrace();
+            }
         }
-
-//        CDATool.main(null);
     }
 
     protected static List<String> getText(String path) {

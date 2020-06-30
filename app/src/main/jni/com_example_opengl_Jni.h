@@ -18,23 +18,23 @@ JNIEXPORT void JNICALL Java_com_example_opengl_Jni_render(JNIEnv *env, jobject o
 
 /*
  * Class:     com_opensles_ffmpeg_MainActivity
- * Method:    stopAudioPlayer
+ * Method:    stopPlayer
  * Signature: ()I
- */JNIEXPORT jint JNICALL Java_com_example_opengl_Jni_stopAudioPlayer(JNIEnv *, jclass);
+ */JNIEXPORT jint JNICALL Java_com_example_opengl_Jni_stopPlayer(JNIEnv *, jobject);
 
 /*
 * Class:     com_opensles_ffmpeg_MainActivity
 * Method:    destroyEngine
 * Signature: ()I
-*/JNIEXPORT jint JNICALL Java_com_example_opengl_Jni_destroyEngine(
-        JNIEnv *, jclass);
+*/JNIEXPORT jint JNICALL Java_com_example_opengl_Jni_resumePlayer(
+        JNIEnv *, jobject);
 
 /*
 * Class:     com_opensles_ffmpeg_MainActivity
 * Method:    startAudioPlayer
 * Signature: ()I
-*/JNIEXPORT jint JNICALL Java_com_example_opengl_Jni_startAudioPlayer(
-        JNIEnv *, jclass);
+*/JNIEXPORT jint JNICALL Java_com_example_opengl_Jni_pausePlayer(
+        JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

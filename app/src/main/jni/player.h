@@ -50,6 +50,12 @@ extern "C" {
 #include <libavutil/imgutils.h>
 
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
+#define IS_USE_YUV 1
+#define VIDEO_PICTURE_QUEUE_SIZE 30
+
+enum {
+    AV_SYNC_AUDIO_MASTER, AV_SYNC_VIDEO_MASTER, AV_SYNC_EXTERNAL_MASTER,
+};
 
 typedef struct PacketQueue {
     AVPacketList *first_pkt, *last_pkt;
@@ -57,7 +63,7 @@ typedef struct PacketQueue {
     int size;
     int abort_request;
     int serial;
-    pthread_mutex_t *mutex;
+    pthread_mutex_t mutex;
 } PacketQueue;
 
 typedef struct AudioParams {
@@ -69,13 +75,19 @@ typedef struct AudioParams {
     int bytes_per_sec;
 } AudioParams;
 
+typedef struct VideoPicture {
+    AVFrame *pFrame;
+    int width, height;
+    double pts;
+} VideoPicture;
+
 typedef struct GlobalContexts {
     EGLDisplay eglDisplay;
     EGLSurface eglSurface;
     EGLContext eglContext;
     EGLint eglFormat;
 
-    GLuint mTextureID;
+    GLuint mTextureID[3];
     GLuint glProgram;
     GLint positionLoc;
 
@@ -86,7 +98,26 @@ typedef struct GlobalContexts {
     AVCodec *vcodec;
     AVCodec *acodec;
 
+    PacketQueue video_queue;
     PacketQueue audio_queue;
+
+    pthread_mutex_t pictq_mutex;
+    pthread_cond_t pictq_cond;
+
+    pthread_mutex_t timer_mutex;
+    pthread_cond_t timer_cond;
+
+    double frame_timer;
+    double frame_last_delay;
+    double frame_last_pts;
+
+    int64_t video_current_pts_time;
+
+    int pictq_windex;
+    int pictq_rindex;
+    int pictq_size;
+
+    VideoPicture pictq[VIDEO_PICTURE_QUEUE_SIZE];
 
     const char* inputPath;
 
@@ -94,22 +125,32 @@ typedef struct GlobalContexts {
     int pause;
 } GlobalContext;
 
+double get_master_clock();
+double get_audio_clock();
+double get_video_clock();
+
 void packet_queue_init(PacketQueue *q);
 int packet_queue_get(PacketQueue *q, AVPacket *pkt);
 int packet_queue_put(PacketQueue *q, AVPacket *pkt);
 
+int32_t setBuffersGeometry(int32_t width, int32_t height);
 int audio_decode_frame(uint8_t *audio_buf, int buf_size);
 void* open_media(void *argv);
+void *video_thread(void *argv);
+void *video_thread_1(void *argv);
+void* picture_thread(void *argv);
 int createEngine();
 int createBufferQueueAudioPlayer();
 void fireOnPlayer();
 
 void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame);
-void renderSurface(uint8_t *pixel);
-//void renderSurface(AVFrame *frame);
-void Render(uint8_t *pixel);
-//void Render(AVFrame *frame);
+//void renderSurface(uint8_t *pixel);
+void renderSurface(AVFrame *frame);
+//void Render(uint8_t *pixel);
+void Render(AVFrame *frame);
 int CreateProgram();
+int eglClose();
+void destroyPlayerAndEngine();
 
 extern GlobalContext global_context;
 

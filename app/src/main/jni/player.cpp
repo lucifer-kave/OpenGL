@@ -4,6 +4,7 @@
 
 #include "player.h"
 
+static int av_sync_type = AV_SYNC_AUDIO_MASTER;
 static void sigterm_handler(int sig) {
     av_log(NULL, AV_LOG_ERROR, "sigterm_handler : sig is %d \n", sig);
     exit(123);
@@ -14,6 +15,16 @@ static void ffmpeg_log_callback(void *ptr, int level, const char *fmt,
     //__android_log_vprint(ANDROID_LOG_DEBUG, "FFmpeg", fmt, vl);
 }
 
+double get_master_clock() {
+    if (av_sync_type == AV_SYNC_VIDEO_MASTER) {
+        return get_video_clock();
+    } else if (av_sync_type == AV_SYNC_AUDIO_MASTER) {
+        return get_audio_clock();
+    } else {
+        return get_audio_clock();
+    }
+}
+
 void* open_media(void *argv) {
     int i;
     int err = 0;
@@ -22,8 +33,10 @@ void* open_media(void *argv) {
     AVDictionaryEntry *dict = NULL;
     AVPacket pkt;
     int audio_stream_index = -1;
+    int video_index = -1;
     bool firstPacket = true;
-    pthread_t thread;
+    pthread_t thread1;
+    pthread_t thread2;
 
     global_context.quit = 0;
     global_context.pause = 0;
@@ -61,6 +74,13 @@ void* open_media(void *argv) {
         goto failure;
     }
 
+    for (int i = 0; i < fmt_ctx->nb_streams; i++) {
+        if (fmt_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+            video_index = i;
+        }
+    }
+    LOGE("成功找到视频流")
+
     // search audio stream in all streams.
     for (i = 0; i < fmt_ctx->nb_streams; i++) {
         // we used the first audio stream
@@ -73,6 +93,28 @@ void* open_media(void *argv) {
     // if no audio, exit
     if (-1 == audio_stream_index) {
         goto failure;
+    }
+
+    if (-1 != video_index) {
+        AVCodecContext *avCodecContext = fmt_ctx->streams[video_index]->codec;
+        AVCodec *avCodec = avcodec_find_decoder(avCodecContext->codec_id);
+        if (avcodec_open2(avCodecContext, avCodec, NULL) < 0) {
+            LOGE("打开失败")
+            goto failure;
+        }
+
+        global_context.vcodec_ctx = avCodecContext;
+        global_context.vstream = fmt_ctx->streams[video_index];
+        global_context.vcodec = avCodec;
+
+        setBuffersGeometry(avCodecContext->width, avCodecContext->height);
+
+        // init picture queue lock and cond
+        pthread_mutex_init(&global_context.pictq_mutex, NULL);
+        pthread_cond_init(&global_context.pictq_cond, NULL);
+
+        pthread_mutex_init(&global_context.timer_mutex, NULL);
+        pthread_cond_init(&global_context.timer_cond, NULL);
     }
 
     // open audio
@@ -101,10 +143,30 @@ void* open_media(void *argv) {
     // opensl es init
     createEngine();
     createBufferQueueAudioPlayer();
+    LOGE("open_media 222222")
+    // init frame time
+    global_context.frame_timer = (double) av_gettime() / 1000000.0;
+    global_context.frame_last_delay = 40e-3;
+
+    // init video current pts
+    global_context.video_current_pts_time = av_gettime();
+
+    global_context.pictq_rindex = global_context.pictq_windex = 0;
+    LOGE("open_media 1111111")
+    // init audio and video packet queue
+    packet_queue_init(&global_context.video_queue);
+    packet_queue_init(&global_context.audio_queue);
+    LOGE("open_media 0000000")
+    if (-1 != video_index) {
+        pthread_create(&thread1, NULL, video_thread, NULL);
+        pthread_create(&thread2, NULL, picture_thread, NULL);
+    }
 
     // read url media data circle
     while ((av_read_frame(fmt_ctx, &pkt) >= 0) && (!global_context.quit)) {
-        if (pkt.stream_index == audio_stream_index) {
+        if (pkt.stream_index == video_index) {
+            packet_queue_put(&global_context.video_queue, &pkt);
+        } else if (pkt.stream_index == audio_stream_index) {
             packet_queue_put(&global_context.audio_queue, &pkt);
             if (firstPacket) {
                 firstPacket = false;

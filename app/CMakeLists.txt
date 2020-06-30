@@ -57,8 +57,8 @@ add_library(native-lib
         src/main/jni/shader.cpp
         src/main/jni/player.cpp
         src/main/jni/audio.cpp
-        src/main/jni/audio-jni.cpp
-        src/main/jni/util.cpp)
+        src/main/jni/util.cpp
+        src/main/jni/video.cpp)
 
 find_library(log-lib
         log)

@@ -4,8 +4,11 @@
 #include "player.h"
 
 void packet_queue_init(PacketQueue *q) {
+    LOGE("packet_queue_init 0000000")
     memset(q, 0, sizeof(PacketQueue));
-    pthread_mutex_init(q->mutex, NULL);
+    LOGE("packet_queue_init 1111111")
+    pthread_mutex_init(&q->mutex, NULL);
+    LOGE("packet_queue_init 22222222")
 }
 
 int packet_queue_put(PacketQueue *q, AVPacket *pkt) {
@@ -31,7 +34,7 @@ int packet_queue_put(PacketQueue *q, AVPacket *pkt) {
     pkt1->pkt = *pkt;
     pkt1->next = NULL;
 
-    pthread_mutex_lock(q->mutex);
+    pthread_mutex_lock(&q->mutex);
 
     if (!q->last_pkt) {
         q->first_pkt = pkt1;
@@ -43,7 +46,7 @@ int packet_queue_put(PacketQueue *q, AVPacket *pkt) {
     q->nb_packets++;
     q->size += pkt1->pkt.size;
 
-    pthread_mutex_unlock(q->mutex);
+    pthread_mutex_unlock(&q->mutex);
 
     return 0;
 }
@@ -56,7 +59,7 @@ int packet_queue_get(PacketQueue *q, AVPacket *pkt) {
         return -1;
     }
 
-    pthread_mutex_lock(q->mutex);
+    pthread_mutex_lock(&q->mutex);
 
     pkt1 = q->first_pkt;
 
@@ -76,7 +79,7 @@ int packet_queue_get(PacketQueue *q, AVPacket *pkt) {
         ret = 0;
     }
 
-    pthread_mutex_unlock(q->mutex);
+    pthread_mutex_unlock(&q->mutex);
 
     return ret;
 }

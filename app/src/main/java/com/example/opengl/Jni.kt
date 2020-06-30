@@ -16,16 +16,13 @@ object Jni {
         System.loadLibrary("native-lib")
     }
 
-    external fun render29(input: FileDescriptor?, surface: Surface)
+    external fun render29(input: FileDescriptor, surface: Surface)
 
     external fun render(input: String, surface: Surface)
 
-    @JvmStatic
-    external fun stopAudioPlayer():Int
+    external fun resumePlayer():Int
 
-    @JvmStatic
-    external fun destroyEngine():Int
+    external fun pausePlayer():Int
 
-    @JvmStatic
-    external fun startAudioPlayer():Int
+    external fun stopPlayer():Int
 }
