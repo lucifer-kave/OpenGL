@@ -6,17 +6,19 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
+import com.example.opengl.databinding.ActivityGlsurfaceviewBinding
 
 class GLSurfaceViewActivity : AppCompatActivity() {
-    private lateinit var surface: RelativeLayout
     private lateinit var glSurfaceView: MyGLSurfaceView
+    private lateinit var mBinding: ActivityGlsurfaceviewBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_glsurfaceview)
-        surface = findViewById(R.id.surface_container);
+        mBinding = ActivityGlsurfaceviewBinding.inflate(layoutInflater)
+        setContentView(mBinding.root)
         glSurfaceView = MyGLSurfaceView(this);
         glSurfaceView.setEGLContextClientVersion(2)
-        surface.setOnTouchListener { v: View?, event: MotionEvent? ->
+        mBinding.surfaceContainer.addView(glSurfaceView)
+        mBinding.surfaceContainer.setOnTouchListener { v: View?, event: MotionEvent? ->
 
             return@setOnTouchListener false
         }
