@@ -3,6 +3,7 @@ package com.example.opengl
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.example.opengl.databinding.ActivityFlutterFragmentBinding
 import io.flutter.embedding.android.FlutterFragment
@@ -11,7 +12,7 @@ import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
 
 
-class FlutterFragmentActivity : AppCompatActivity() {
+class FlutterFragmentActivity : FragmentActivity() {
     private var flutterFragment : FlutterFragment? = null
     private val TAG_FLUTTER_FRAGMENT = "flutter_fragment"
     private var mBinding: ActivityFlutterFragmentBinding? = null

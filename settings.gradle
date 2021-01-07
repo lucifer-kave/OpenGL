@@ -1,3 +1,5 @@
+include ':annotation'
+include ':processor'
 include ':commonlib'
 include ':libcda'
 setBinding(new Binding([gradle: this]))

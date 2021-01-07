@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.Surface
+import com.miracle.router.annotation.Router
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -19,6 +20,7 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 
+@Router(path = ["/my"])
 class MyGLSurfaceView : GLSurfaceView {
     private val TAG = "VideoGLSurfaceView"
     private val TOUCH_SCALE_FACTOR = 180.0f / 320

@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.fragment.app.FragmentActivity
+
 import com.example.opengl.databinding.ActivityGlsurfaceviewBinding
 
-class GLSurfaceViewActivity : AppCompatActivity() {
+class GLSurfaceViewActivity : FragmentActivity() {
     private lateinit var glSurfaceView: MyGLSurfaceView
     private lateinit var mBinding: ActivityGlsurfaceviewBinding
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -47,11 +47,11 @@ public class MyClass {
     private static final boolean showUI = true;
     public static void main(String[] args) {
         if (showUI) {
-//            CDATool.main(null);
+            CDATool.main(null);
 //            Heap.sort();
 //            Heap.choose();
 //            Heap.qucksort();
-            Heap.test();
+//            Heap.test();
         }else {
             try {
                 Workset workset = WorksetReader.readWorkset("/Users/guoqi5/cda_workset.ws");

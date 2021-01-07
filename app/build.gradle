@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
@@ -8,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.opengl"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -57,4 +58,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(path: ':flutter')
     implementation project(path: ':commonlib')
+
+    implementation project(":annotation")
+    kapt project(":processor")
 }

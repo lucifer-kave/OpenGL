@@ -17,15 +17,21 @@ import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.example.opengl.Jni.render
 import com.example.opengl.Jni.render29
 import com.example.opengl.databinding.ActivityMainBinding
+import com.miracle.commonlib.mroute.MRoute
+import com.miracle.commonlib.mroute.core.RootUriHandler
+import com.miracle.commonlib.mroute.core.UriRequest
+import com.miracle.router.annotation.Router
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterView
 import java.io.File
 import java.io.FileDescriptor
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+@Router(path = ["/main"])
+class MainActivity : FragmentActivity(), View.OnClickListener {
     private val PICK_VIDEO_RESULT_CODE = 101;
     private lateinit var surfaceView: SurfaceView
     private lateinit var glSurfaceView: VideoGLSurfaceView
@@ -48,6 +54,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             ActivityCompat.requestPermissions(this,
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         }
+
+        MRoute.init(RootUriHandler())
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,

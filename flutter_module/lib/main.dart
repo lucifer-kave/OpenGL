@@ -88,14 +88,25 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              alignment: Alignment(0, 0),
+              decoration: new BoxDecoration(
+                color: Color(0xFFE6E6E6),
+                borderRadius: new BorderRadius.all(new Radius.circular(20))
+              ),
+              child:Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                 children:<Widget>[
+                   Icon(Icons.search),
+                   Text('搜群名')],),
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headline,
             ),
           ],
         ),
