@@ -24,11 +24,11 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-frtti -fexceptions"
-                abiFilters 'armeabi-v7a'
+                abiFilters 'armeabi-v7a','arm64-v8a'
             }
         }
         ndk {
-            abiFilters "armeabi-v7a", "x86"
+            abiFilters 'armeabi-v7a', "x86"
         }
     }
 
@@ -56,7 +56,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(path: ':flutter')
+//    implementation project(path: ':flutter')
     implementation project(path: ':commonlib')
 
     implementation project(":annotation")

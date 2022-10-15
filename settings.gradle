@@ -2,11 +2,11 @@ include ':annotation'
 include ':processor'
 include ':commonlib'
 include ':libcda'
-setBinding(new Binding([gradle: this]))
-evaluate(new File(
-  settingsDir,
-  'flutter_module/.android/include_flutter.groovy'
-))
+//setBinding(new Binding([gradle: this]))
+//evaluate(new File(
+//  settingsDir,
+//  'flutter_module/.android/include_flutter.groovy'
+//))
 rootProject.name='OpenGL'
 include ':app'
 

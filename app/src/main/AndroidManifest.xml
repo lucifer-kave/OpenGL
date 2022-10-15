@@ -17,7 +17,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FlutterFragmentActivity"></activity>
+        <activity
+            android:name=".RECActivity"
+            android:exported="false" />
+        <activity android:name=".FlutterFragmentActivity" />
         <activity android:name=".GLSurfaceViewActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -32,6 +35,12 @@
             android:hardwareAccelerated="true"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
+
+        <service
+            android:name="com.example.opengl.RECService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="REC">
     </application>
 
 </manifest>

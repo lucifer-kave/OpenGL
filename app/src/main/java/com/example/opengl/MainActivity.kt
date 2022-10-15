@@ -25,8 +25,8 @@ import com.miracle.commonlib.mroute.MRoute
 import com.miracle.commonlib.mroute.core.RootUriHandler
 import com.miracle.commonlib.mroute.core.UriRequest
 import com.miracle.router.annotation.Router
-import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.android.FlutterView
+//import io.flutter.embedding.android.FlutterActivity
+//import io.flutter.embedding.android.FlutterView
 import java.io.File
 import java.io.FileDescriptor
 
@@ -47,6 +47,7 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
         mBinding.play2.setOnClickListener(this)
         mBinding.play3.setOnClickListener(this)
         mBinding.play4.setOnClickListener(this)
+        mBinding.record.setOnClickListener(this)
 
 
         if (ContextCompat.checkSelfPermission(this,
@@ -109,10 +110,13 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
                 startActivity(Intent(this@MainActivity, GLSurfaceViewActivity::class.java))
             }
             R.id.play3 -> {
-                startActivity(FlutterActivity.createDefaultIntent(this@MainActivity))
+//                startActivity(FlutterActivity.createDefaultIntent(this@MainActivity))
             }
             R.id.play4 -> {
                 startActivity(Intent(this@MainActivity, FlutterFragmentActivity::class.java))
+            }
+            R.id.record -> {
+                startActivity(Intent(this@MainActivity, RECActivity::class.java))
             }
         }
 
