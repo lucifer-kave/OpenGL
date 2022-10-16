@@ -1,10 +1,14 @@
 package com.example.opengl
 
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
@@ -21,6 +25,7 @@ class RECActivity : AppCompatActivity() {
                 getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             val intent: Intent = mediaProjectionManager.createScreenCaptureIntent()
             startActivityForResult(intent, SCREEN_CAPTURE_REQUEST_CODE)
+            startForegroundService()
         }
     }
 
@@ -34,5 +39,9 @@ class RECActivity : AppCompatActivity() {
         }
     }
 
-    fun startF
+    fun startForegroundService() {
+        intent = Intent(RECActivity@this, RECService::class.java)
+        intent.putExtra("from", "RECActivity");
+        startForegroundService(intent)
+    }
 }

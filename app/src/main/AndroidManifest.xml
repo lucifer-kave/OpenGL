@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <uses-feature
         android:glEsVersion="0x00030001"
@@ -17,30 +18,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".RECActivity"
-            android:exported="false" />
-        <activity android:name=".FlutterFragmentActivity" />
-        <activity android:name=".GLSurfaceViewActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name="com.example.opengl.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name="io.flutter.embedding.android.FlutterActivity"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize" />
+            android:name="com.example.opengl.RECActivity"
+            android:exported="false" />
+        <activity android:name="com.example.opengl.FlutterFragmentActivity" />
+        <activity android:name="com.example.opengl.GLSurfaceViewActivity" />
 
         <service
             android:name="com.example.opengl.RECService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="REC">
+            android:foregroundServiceType="mediaProjection"/>
     </application>
 
 </manifest>
