@@ -56,6 +56,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.squareup.okhttp3:okhttp:4.0.1'
 //    implementation project(path: ':flutter')
     implementation project(path: ':commonlib')
 
