@@ -8,14 +8,21 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
+import android.media.MediaCodec
+import android.media.MediaCodecInfo
+import android.media.MediaFormat
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
+import android.view.Surface
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import java.io.IOException
+import java.io.RandomAccessFile
 
 
 class RECService: Service() {
@@ -26,6 +33,11 @@ class RECService: Service() {
     private var width = 720
     private var height = 1080
     private var dpi = 360
+    private var mH264DataFile:RandomAccessFile? = null
+    private var vEncoder:MediaCodec? = null
+    private var mVirtualDisplay: VirtualDisplay? = null
+    private var isVideoEncoder = false
+    private var vBufferInfo:MediaCodec.BufferInfo = MediaCodec.BufferInfo()
 
     inner class RECBinder : Binder() {
         val service:RECService
@@ -33,15 +45,19 @@ class RECService: Service() {
     }
 
     override fun onCreate() {
+        Log.e(TAG,"onCreate")
         super.onCreate()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.e(TAG,"onStartCommand")
         buildNotification()
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onBind(intent: Intent?): IBinder {
+        Log.e(TAG,"onBind")
+        buildNotification()
         return mBinder
     }
 
@@ -97,7 +113,8 @@ class RECService: Service() {
         }
         //有录屏工具，没有在录屏，就进行录屏
         //初始化录像机，录音机Recorder
-        initRecorder()
+//        initRecorder()
+        prepareVideoEncoder(width, height);
         //根据获取的屏幕参数创建虚拟的录屏屏幕
         createVirtualDisplay()
         //本来不加异常也可以，但是这样就不知道是否start成功
@@ -131,7 +148,7 @@ class RECService: Service() {
         //设置视频格式为mp4
         mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         //保存在该位置
-        mediaRecorder?.setOutputFile("videoPath");
+        mediaRecorder?.setOutputFile("mH264DataFile");
         //设置视频大小，清晰度
         mediaRecorder?.setVideoSize(width, height);
         //设置视频编码为H.264
@@ -152,6 +169,72 @@ class RECService: Service() {
                 "Recorder录像机prepare失败，无法使用，请重新初始化！",
                 Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Throws(IOException::class)
+    fun prepareVideoEncoder(width: Int, height: Int) {
+        val format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height)
+        format.setInteger(
+            MediaFormat.KEY_COLOR_FORMAT,
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+        )
+        format.setInteger(MediaFormat.KEY_BIT_RATE, width * height)
+        format.setInteger(MediaFormat.KEY_WIDTH, width)
+        format.setInteger(MediaFormat.KEY_HEIGHT, height)
+        format.setInteger(MediaFormat.KEY_FRAME_RATE, 20)
+        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
+        // 当画面静止时,重复最后一帧，不影响界面显示(好像并没有什么用)
+        format.setLong(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, (1000000 / 20).toLong())
+        val encoder = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_VIDEO_AVC)
+        encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+        val surface: Surface = encoder.createInputSurface()
+        mVirtualDisplay = mediaProjection?.createVirtualDisplay(
+            "-display", width, height, 1,
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC, surface, null, null
+        )
+        vEncoder = encoder
+        startVideo()
+    }
+
+    fun startVideo() {
+        Thread{
+            try {
+                vEncoder?.start();
+
+
+                while (isVideoEncoder && !Thread.interrupted()) {
+                    try {
+
+                        var outputBufferId = vEncoder?.dequeueOutputBuffer(vBufferInfo, 0);
+
+                        if (outputBufferId != null && outputBufferId >= 0) {
+
+                            // 有效输出
+                            // 获取到的实时帧视频数据
+                            var encodedData = vEncoder?.getOutputBuffer(outputBufferId)
+
+                            val dataToWrite = ByteArray(vBufferInfo.size)
+                            encodedData?.get(dataToWrite, 0, vBufferInfo.size);
+                            //  onEncodedAvcFrame(bb, vBufferInfo);
+                            Log.e(TAG, "获取到数据" + vBufferInfo.size)
+
+                            vEncoder?.releaseOutputBuffer(outputBufferId, false);
+                        }
+                    } catch (e:Exception) {
+                        e.printStackTrace();
+                        break;
+                    }
+                }
+            } catch (e:Exception) {
+                isVideoEncoder = false
+                if (null != vEncoder) {
+                    vEncoder?.stop()
+                }
+                if (mVirtualDisplay != null) mVirtualDisplay?.release()
+                if (mediaProjection != null) mediaProjection?.stop()
+            }
+        }.start()
+        isVideoEncoder = true
     }
 
     fun createVirtualDisplay() {
@@ -176,6 +259,7 @@ class RECService: Service() {
     }
 
     companion object {
+        private const val TAG = "RECService"
         private const val CHANNEL_ID = "com.example.opengl.RECService"
         private const val CHANNEL_NAME = "com.example.opengl"
     }

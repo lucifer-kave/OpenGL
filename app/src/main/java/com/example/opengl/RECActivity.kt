@@ -1,18 +1,24 @@
 package com.example.opengl
 
+import android.Manifest
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
-import android.widget.Button
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.opengl.webscket.WebSocketService
+import kotlinx.android.synthetic.main.activity_rec.*
 import okio.ByteString
 
 
@@ -38,12 +44,51 @@ class RECActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rec)
-        findViewById<Button>(R.id.btn_record).setOnClickListener {
+        btn_record.setOnClickListener {
             mediaProjectionManager =
                 getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             val intent: Intent = mediaProjectionManager.createScreenCaptureIntent()
             startActivityForResult(intent, SCREEN_CAPTURE_REQUEST_CODE)
             startForegroundService()
+        }
+        btn_start.setOnClickListener {
+            mRECService?.startRecord()
+        }
+        checkPermission()
+    }
+
+    /**
+     * 权限申请
+     */
+    fun checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            var permissions = arrayOf<String>(Manifest.permission.RECORD_AUDIO,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            for (permission in permissions) {
+                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, permissions, 200);
+                    return;
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requestCode === 200) {
+            for ((i, permission) in permissions.withIndex()) {
+                if (grantResults[i] !== PackageManager.PERMISSION_GRANTED) {
+                    val intent = Intent()
+                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivityForResult(intent, 200)
+                    return
+                }
+            }
         }
     }
 
