@@ -51,8 +51,8 @@ void* open_media(void *argv) {
     av_log_set_level(AV_LOG_WARNING);
 
     /* register all codecs, demux and protocols */
-    avfilter_register_all();
-    av_register_all();
+//    avfilter_register_all();
+//    av_register_all();
     avformat_network_init();
 
     fmt_ctx = avformat_alloc_context();
@@ -75,7 +75,7 @@ void* open_media(void *argv) {
     }
 
     for (int i = 0; i < fmt_ctx->nb_streams; i++) {
-        if (fmt_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+        if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             video_index = i;
         }
     }
@@ -84,7 +84,7 @@ void* open_media(void *argv) {
     // search audio stream in all streams.
     for (i = 0; i < fmt_ctx->nb_streams; i++) {
         // we used the first audio stream
-        if (fmt_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
             audio_stream_index = i;
             break;
         }
@@ -96,8 +96,9 @@ void* open_media(void *argv) {
     }
 
     if (-1 != video_index) {
-        AVCodecContext *avCodecContext = fmt_ctx->streams[video_index]->codec;
-        AVCodec *avCodec = avcodec_find_decoder(avCodecContext->codec_id);
+        AVCodecParameters *avCodecParameters = fmt_ctx->streams[video_index]->codecpar;
+        const AVCodec *avCodec = avcodec_find_decoder(avCodecParameters->codec_id);
+        AVCodecContext *avCodecContext = avcodec_alloc_context3(avCodec);
         if (avcodec_open2(avCodecContext, avCodec, NULL) < 0) {
             LOGE("打开失败")
             goto failure;
@@ -119,10 +120,10 @@ void* open_media(void *argv) {
 
     // open audio
     if (-1 != audio_stream_index) {
-        global_context.acodec_ctx = fmt_ctx->streams[audio_stream_index]->codec;
+        AVCodecParameters *avCodecParameters = fmt_ctx->streams[audio_stream_index]->codecpar;
+        global_context.acodec = avcodec_find_decoder(avCodecParameters->codec_id);
+        global_context.acodec_ctx = avcodec_alloc_context3(global_context.acodec);
         global_context.astream = fmt_ctx->streams[audio_stream_index];
-        global_context.acodec = avcodec_find_decoder(
-                global_context.acodec_ctx->codec_id);
         //av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1,
         //	&global_context.acodec, 0);
         if (NULL == global_context.acodec) {
@@ -173,7 +174,7 @@ void* open_media(void *argv) {
                 fireOnPlayer();
             }
         } else {
-            av_free_packet(&pkt);
+            av_packet_unref(&pkt);
         }
     }
 

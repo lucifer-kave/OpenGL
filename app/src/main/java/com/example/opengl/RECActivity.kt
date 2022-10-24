@@ -55,6 +55,7 @@ class RECActivity : AppCompatActivity() {
             mRECService?.startRecord()
         }
         checkPermission()
+        bindWebSocketService()
     }
 
     /**
@@ -110,6 +111,7 @@ class RECActivity : AppCompatActivity() {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 var binder = service as RECService.RECBinder
                 mRECService = binder.service
+                mRECService?.mWebSocketService = mWebSocketService
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {

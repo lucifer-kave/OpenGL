@@ -9,6 +9,7 @@ import okhttp3.*
 import okhttp3.internal.ws.RealWebSocket
 import okio.ByteString
 import java.net.URI
+import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 
 
@@ -23,17 +24,22 @@ class WebSocketService: Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder {
+        initSocketClient()
         return mBinder
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        closeConnect()
+        return super.onUnbind(intent)
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        initSocketClient()
         return super.onStartCommand(intent, flags, startId)
     }
 
     //这里是处理webscoket
     private fun initSocketClient() {
-        val url = "ws://端口号:ip地址" //协议标识符是ws
+        val url = "ws://192.168.31.93:8080" //协议标识符是ws
         okHttpClient = OkHttpClient.Builder()
             .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)//设置读取超时时间
             .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)//设置写的超时时间
@@ -88,6 +94,8 @@ class WebSocketService: Service() {
     }
 
     fun sendData(byteString: ByteString) {
+//        Log.e(TAG, byteString.string(Charset.forName("utf-8")))
+        Log.e(TAG, "client=" + (client == null))
         client?.send(byteString)
     }
 

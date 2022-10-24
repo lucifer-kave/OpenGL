@@ -87,7 +87,7 @@ void renderSurface(uint8_t *pixel) {
 
 void renderSurface(AVFrame *avFrame) {
     LOGI("renderSurface")
-    Render(avFrame);
+//    Render(avFrame);
 }
 
 
@@ -225,11 +225,10 @@ void player_video() {
     AVFormatContext *avFormatContext = NULL;
     AVPacket *packet;
     AVCodecContext *avCodecContext;
-    AVCodec *avCodec;
+    const AVCodec *avCodec;
     pthread_t thread;
     int error;
     char buf[] = "";
-    av_register_all();
     avformat_network_init();
     int video_index = -1;
     if ((error = avformat_open_input(&avFormatContext, global_context.inputPath, NULL, NULL)) < 0) {
@@ -245,14 +244,14 @@ void player_video() {
     }
 
     for (int i = 0; i < avFormatContext->nb_streams; i++) {
-        if (avFormatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+        if (avFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             video_index = i;
         }
     }
     LOGE("成功找到视频流")
-
-    avCodecContext = avFormatContext->streams[video_index]->codec;
-    avCodec = avcodec_find_decoder(avCodecContext->codec_id);
+    AVCodecParameters *avCodecParameters = avFormatContext->streams[video_index]->codecpar;
+    avCodec = avcodec_find_decoder(avCodecParameters->codec_id);
+    avCodecContext = avcodec_alloc_context3(avCodec);
     if (avcodec_open2(avCodecContext, avCodec, NULL) < 0) {
         LOGE("打开失败")
         return;
@@ -269,8 +268,9 @@ void player_video() {
     AVFrame *frame = av_frame_alloc();
     if (!IS_USE_YUV) {
         AVFrame *rgb_frame = av_frame_alloc();
-        uint8_t *out_buffer = (uint8_t *)av_malloc(avpicture_get_size(AV_PIX_FMT_RGBA, avCodecContext->width, avCodecContext->height));
-        avpicture_fill((AVPicture *)rgb_frame, out_buffer, AV_PIX_FMT_RGBA, avCodecContext->width,avCodecContext->height);
+        uint8_t *out_buffer = (uint8_t *)av_malloc(av_image_get_buffer_size(AV_PIX_FMT_RGBA, avCodecContext->width, avCodecContext->height, 1));
+        av_image_fill_arrays(rgb_frame->data, rgb_frame->linesize, out_buffer, AV_PIX_FMT_YUV420P,
+                             avCodecContext->width, avCodecContext->height, 1);
     }
 
     /**
@@ -283,7 +283,7 @@ void player_video() {
         struct SwsContext* swsContext = sws_getContext(avCodecContext->width,avCodecContext->height,avCodecContext->pix_fmt,
                 avCodecContext->width,avCodecContext->height,AV_PIX_FMT_RGBA,SWS_BICUBIC,NULL,NULL,NULL);
     }
-    pthread_create(&thread, NULL, video_thread_1, NULL);
+//    pthread_create(&thread, NULL, video_thread_1, NULL);
 
 //    int frameCount;
 //    int h = 0;
@@ -292,7 +292,7 @@ void player_video() {
         LOGE("解码 %d",packet->stream_index)
         LOGE("VINDEX %d",video_index)
         if (packet->stream_index == video_index) {
-            packet_queue_put(&global_context.video_queue, packet);
+//            packet_queue_put(&global_context.video_queue, packet);
 //            LOGE("解码 hhhhh");
 //            avcodec_decode_video2(global_context.vcodec_ctx, frame, &frameCount, packet);
 //            avcodec_decode_video2(avCodecContext, frame, &frameCount, packet);
@@ -321,7 +321,7 @@ void player_video() {
 //            }
 
         } else {
-            av_free_packet(packet);
+            av_packet_unref(packet);
         }
 
     }
@@ -428,7 +428,7 @@ Java_com_example_opengl_Jni_render(JNIEnv *env, jobject obj, jstring input, jobj
  * Signature: ()I
  */ extern "C" JNIEXPORT jint JNICALL Java_com_example_opengl_Jni_stopPlayer(
         JNIEnv *, jobject) {
-    destroyPlayerAndEngine();
+//    destroyPlayerAndEngine();
     eglClose();
     global_context.pause = 1;
     global_context.quit = 1;

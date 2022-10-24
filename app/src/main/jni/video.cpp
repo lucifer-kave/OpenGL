@@ -177,17 +177,18 @@ void *video_thread(void *argv) {
         frame = av_frame_alloc();
         frameCount = 0;
 
-        avcodec_decode_video2(global_context.vcodec_ctx, frame, &frameCount, packet);
+//        avcodec_decode_video2(global_context.vcodec_ctx, frame, &frameCount, packet);
+
         if (frameCount) {
 //            renderSurface(frame);
 //            av_frame_unref(frame);
-            pts = frame->pkt_pts * av_q2d(global_context.vstream->time_base);
-
-            pts = synchronize_video(frame, pts);
-
-            if (queue_picture(frame, pts) < 0) {
-                break;
-            }
+//            pts = frame->pts * av_q2d(global_context.vstream->time_base);
+//
+//            pts = synchronize_video(frame, pts);
+//
+//            if (queue_picture(frame, pts) < 0) {
+//                break;
+//            }
         }
         av_packet_unref(packet);
         av_init_packet(packet);
@@ -224,10 +225,10 @@ void *video_thread_1(void *argv) {
         frame = av_frame_alloc();
         frameCount = 0;
 
-        avcodec_decode_video2(global_context.vcodec_ctx, frame, &frameCount, packet);
+//        avcodec_decode_video2(global_context.vcodec_ctx, frame, &frameCount, packet);
         if (frameCount) {
-            renderSurface(frame);
-            av_frame_unref(frame);
+//            renderSurface(frame);
+//            av_frame_unref(frame);
         }
         av_packet_unref(packet);
         av_init_packet(packet);

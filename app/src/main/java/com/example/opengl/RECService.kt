@@ -6,13 +6,10 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.*
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
-import android.media.MediaCodec
-import android.media.MediaCodecInfo
-import android.media.MediaFormat
-import android.media.MediaRecorder
+import android.media.*
 import android.media.projection.MediaProjection
 import android.os.Binder
 import android.os.Build
@@ -21,8 +18,10 @@ import android.util.Log
 import android.view.Surface
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import java.io.IOException
-import java.io.RandomAccessFile
+import com.example.opengl.webscket.WebSocketService
+import okio.ByteString.Companion.toByteString
+import java.io.*
+import java.util.*
 
 
 class RECService: Service() {
@@ -33,11 +32,11 @@ class RECService: Service() {
     private var width = 720
     private var height = 1080
     private var dpi = 360
-    private var mH264DataFile:RandomAccessFile? = null
     private var vEncoder:MediaCodec? = null
     private var mVirtualDisplay: VirtualDisplay? = null
     private var isVideoEncoder = false
     private var vBufferInfo:MediaCodec.BufferInfo = MediaCodec.BufferInfo()
+    var mWebSocketService :WebSocketService? = null
 
     inner class RECBinder : Binder() {
         val service:RECService
@@ -61,7 +60,13 @@ class RECService: Service() {
         return mBinder
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        stopRecord()
+        return super.onUnbind(intent)
+    }
+
     override fun onDestroy() {
+        stopRecord()
         super.onDestroy()
     }
 
@@ -215,9 +220,8 @@ class RECService: Service() {
 
                             val dataToWrite = ByteArray(vBufferInfo.size)
                             encodedData?.get(dataToWrite, 0, vBufferInfo.size);
-                            //  onEncodedAvcFrame(bb, vBufferInfo);
-                            Log.e(TAG, "获取到数据" + vBufferInfo.size)
-
+                            mWebSocketService?.sendData(dataToWrite.toByteString())
+//
                             vEncoder?.releaseOutputBuffer(outputBufferId, false);
                         }
                     } catch (e:Exception) {
@@ -235,6 +239,13 @@ class RECService: Service() {
             }
         }.start()
         isVideoEncoder = true
+    }
+
+    fun stopRecord() {
+        isVideoEncoder = false
+        vEncoder?.stop()
+        mVirtualDisplay?.release()
+        mediaProjection?.stop()
     }
 
     fun createVirtualDisplay() {

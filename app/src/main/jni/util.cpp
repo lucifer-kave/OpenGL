@@ -20,8 +20,9 @@ int packet_queue_put(PacketQueue *q, AVPacket *pkt) {
         return -1;
     }
 
-    if (av_dup_packet(pkt) < 0) {
-        av_log(NULL, AV_LOG_ERROR, "packet_queue_put av_dup_packet failure.\n");
+    if (av_packet_ref(pkt, &pkt1->pkt) < 0)
+    {
+        av_log(NULL, AV_LOG_ERROR, "packet_queue_put av_packet_ref failure.\n");
         return -1;
     }
 

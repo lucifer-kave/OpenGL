@@ -41,12 +41,13 @@ extern "C" {
 #include "libavutil/samplefmt.h"
 #include "libavutil/opt.h"
 #include "libavutil/channel_layout.h"
+#include "libavutil/imgutils.h"
 #include "libavformat/avformat.h"
 #include "libswscale/swscale.h"
 #include "libswresample/swresample.h"
-#include "libavfilter/avfilter.h"
-#include "libavfilter/buffersink.h"
-#include "libavfilter/buffersrc.h"
+//#include "libavfilter/avfilter.h"
+//#include "libavfilter/buffersink.h"
+//#include "libavfilter/buffersrc.h"
 #include <libavutil/imgutils.h>
 
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000 // 1 second of 48khz 32bit audio
@@ -95,8 +96,8 @@ typedef struct GlobalContexts {
     AVCodecContext *vcodec_ctx;
     AVStream *vstream;
     AVStream *astream;
-    AVCodec *vcodec;
-    AVCodec *acodec;
+    const AVCodec *vcodec;
+    const AVCodec *acodec;
 
     PacketQueue video_queue;
     PacketQueue audio_queue;
