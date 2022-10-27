@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.example.opengl.databinding.ActivityFlutterFragmentBinding
+import com.example.opengl.R
 //import io.flutter.embedding.android.FlutterFragment
 //import io.flutter.embedding.engine.FlutterEngine
 //import io.flutter.embedding.engine.FlutterEngineCache
@@ -15,12 +15,10 @@ import com.example.opengl.databinding.ActivityFlutterFragmentBinding
 class FlutterFragmentActivity : FragmentActivity() {
 //    private var flutterFragment : FlutterFragment? = null
     private val TAG_FLUTTER_FRAGMENT = "flutter_fragment"
-    private var mBinding: ActivityFlutterFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityFlutterFragmentBinding.inflate(layoutInflater)
-        setContentView(mBinding?.root)
+        setContentView(R.layout.activity_flutter_fragment)
         val fragmentManager: FragmentManager = supportFragmentManager
 //        var flutterEngine = FlutterEngine(this)
 //        flutterEngine.getDartExecutor().executeDartEntrypoint(

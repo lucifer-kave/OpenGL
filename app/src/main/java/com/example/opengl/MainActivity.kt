@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.example.opengl.Jni.render
 import com.example.opengl.Jni.render29
-import com.example.opengl.databinding.ActivityMainBinding
 import com.miracle.commonlib.mroute.MRoute
 import com.miracle.commonlib.mroute.core.RootUriHandler
 import com.miracle.commonlib.mroute.core.UriRequest
@@ -29,25 +28,24 @@ import com.miracle.router.annotation.Router
 //import io.flutter.embedding.android.FlutterView
 import java.io.File
 import java.io.FileDescriptor
+import com.example.opengl.R
 
 @Router(path = ["/main"])
 class MainActivity : FragmentActivity(), View.OnClickListener {
     private val PICK_VIDEO_RESULT_CODE = 101;
     private lateinit var surfaceView: SurfaceView
     private lateinit var glSurfaceView: VideoGLSurfaceView
-    private lateinit var mBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(mBinding.root)
+        setContentView(R.layout.activity_main)
         surfaceView = SurfaceView(this)
-        mBinding.surfaceContainer.addView(surfaceView)
-        mBinding.play.setOnClickListener(this)
-        mBinding.play2.setOnClickListener(this)
-        mBinding.play3.setOnClickListener(this)
-        mBinding.play4.setOnClickListener(this)
-        mBinding.record.setOnClickListener(this)
+        findViewById<RelativeLayout>(R.id.surface_container).addView(surfaceView)
+        findViewById<Button>(R.id.play).setOnClickListener(this)
+        findViewById<Button>(R.id.play2).setOnClickListener(this)
+        findViewById<Button>(R.id.play3).setOnClickListener(this)
+        findViewById<Button>(R.id.play4).setOnClickListener(this)
+        findViewById<Button>(R.id.record).setOnClickListener(this)
 
 
         if (ContextCompat.checkSelfPermission(this,

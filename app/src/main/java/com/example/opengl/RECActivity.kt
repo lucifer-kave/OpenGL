@@ -14,12 +14,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.opengl.webscket.WebSocketService
-import kotlinx.android.synthetic.main.activity_rec.*
 import okio.ByteString
+import com.example.opengl.R
 
 
 class RECActivity : AppCompatActivity() {
@@ -44,14 +45,14 @@ class RECActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rec)
-        btn_record.setOnClickListener {
+        findViewById<Button>(R.id.btn_record).setOnClickListener {
             mediaProjectionManager =
                 getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             val intent: Intent = mediaProjectionManager.createScreenCaptureIntent()
             startActivityForResult(intent, SCREEN_CAPTURE_REQUEST_CODE)
             startForegroundService()
         }
-        btn_start.setOnClickListener {
+        findViewById<Button>(R.id.btn_start).setOnClickListener {
             mRECService?.startRecord()
         }
         checkPermission()
